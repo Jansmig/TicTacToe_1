@@ -12,6 +12,7 @@ import javafx.stage.Stage;
 public class MainApp extends Application {
 
     public static int TILE_SIZE = 200;
+    public static boolean xTurn;
 
     public GridPane newGame() {
         GridPane root = new GridPane();
@@ -34,7 +35,7 @@ public class MainApp extends Application {
                 root.add(tile, x, y);
             }
         }
-
+        xTurn = true;
 
         return root;
     }
@@ -47,6 +48,8 @@ public class MainApp extends Application {
         primaryStage.setTitle("TicTacToe");
         primaryStage.setScene(scene);
         primaryStage.show();
+
+        xTurn = true;
 
     }
 
