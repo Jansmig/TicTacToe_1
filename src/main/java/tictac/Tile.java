@@ -101,6 +101,7 @@ public class Tile extends Rectangle {
         return isO;
     }
 
+
     /*
     public Node getNode(GridPane grid, int col, int row) {
         for (Node node : grid.getChildren()) {
