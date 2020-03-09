@@ -2,13 +2,15 @@ package tictac;
 
 
 import javafx.event.EventHandler;
+import javafx.scene.Node;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
 
-import static tictac.MainApp.xTurn;
+import static tictac.MainApp.*;
 
 public class Tile extends Rectangle {
 
@@ -16,7 +18,7 @@ public class Tile extends Rectangle {
     boolean isX;
     boolean isO;
 
-    public Tile (int x, int y, int width, int height) {
+    public Tile(int x, int y, int width, int height) {
         super(x, y, width, height);
         setFill(null);
         setStroke(Color.BLACK);
@@ -24,13 +26,6 @@ public class Tile extends Rectangle {
         setWidth(MainApp.TILE_SIZE);
         setFill(Color.WHITE);
 
-        /*
-        Image xImage = new Image("resources/graphics/X.jpg");
-        Image oImage = new Image("resources/graphics/O.jpg");
-        ImagePattern xPattern = new ImagePattern(xImage);
-        ImagePattern yPattern = new ImagePattern(oImage);
-
-         */
 
         setOnMouseEntered(new EventHandler<MouseEvent>() {
             @Override
@@ -62,6 +57,7 @@ public class Tile extends Rectangle {
                         setAsX(true);
                         setAsO(false);
                         xTurn = false;
+                        announceTurn();
                     } else {
                         Image oImage = new Image("graphics/O.jpg");
                         ImagePattern oPattern = new ImagePattern(oImage);
@@ -70,13 +66,13 @@ public class Tile extends Rectangle {
                         setAsX(false);
                         setAsO(true);
                         xTurn = true;
+                        announceTurn();
                     }
 
 
                 }
             }
         });
-
 
 
     }
@@ -92,4 +88,31 @@ public class Tile extends Rectangle {
     public void setAsO(boolean bool) {
         isO = bool;
     }
+
+    public boolean isPlayable() {
+        return playable;
+    }
+
+    public boolean isX() {
+        return isX;
+    }
+
+    public boolean isO() {
+        return isO;
+    }
+
+    /*
+    public Node getNode(GridPane grid, int col, int row) {
+        for (Node node : grid.getChildren()) {
+            if (GridPane.getColumnIndex(node) == col && GridPane.getRowIndex(node) == row) {
+                return node;
+            } else {
+                return null;
+            }
+        }
+    }
+
+     */
+
+
 }
