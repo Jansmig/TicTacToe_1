@@ -1,7 +1,10 @@
 package tictac;
 
 import javafx.application.Application;
+import javafx.event.EventHandler;
 import javafx.scene.*;
+import javafx.scene.control.Button;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.RowConstraints;
@@ -14,6 +17,8 @@ public class MainApp extends Application {
 
     public static int TILE_SIZE = 200;
     public static boolean xTurn;
+    public static int xVictoryCounter;
+    public static int oVictoryCounter;
 
     /*
     public static GridPane newGame() {
@@ -51,6 +56,39 @@ public class MainApp extends Application {
             System.out.println("O player's turn");
         }
     }
+/*
+    public static boolean scanForX (GridPane gridpane, int col, int row) {
+
+        for (Node node : gridpane.getChildren()) {
+            if (GridPane.getColumnIndex(node) == col && GridPane.getRowIndex(node) == row) {
+                if(node.toString().contains("X"));
+                }
+            }
+        return false;
+    }
+
+ */
+
+    public static boolean scanForX (GridPane gridpane) {
+        return gridpane.getChildren().get(0).toString().contains("X");
+    }
+
+    public static String scanForIdentifier (GridPane gridpane) {
+        return
+        gridpane.getChildren().get(0).toString();
+    }
+
+    /*
+    public boolean chceckRow0() {
+        if (tile00.isX() && tile10.isX() && tile20.isX()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+     */
+
 
 
 
@@ -61,12 +99,12 @@ public class MainApp extends Application {
         gameboard.setPrefSize(TILE_SIZE * 3, TILE_SIZE * 3);
         gameboard.setGridLinesVisible(true);
 
-        for (int i = 3; i < 3; i++ ) {
+        for (int i = 0; i < 3; i++ ) {
             ColumnConstraints col = new ColumnConstraints(TILE_SIZE);
             gameboard.getColumnConstraints().add(col);
         }
 
-        for (int j = 3; j < 3; j++) {
+        for (int j = 0; j < 3; j++) {
             RowConstraints row = new RowConstraints(TILE_SIZE);
             gameboard.getRowConstraints().add(row);
         }
@@ -103,6 +141,45 @@ public class MainApp extends Application {
 
 
 
+        gameboard.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                if ((tile00.isX() && tile10.isX() && tile20.isX()) ||
+                        (tile01.isX() && tile11.isX() && tile21.isX()) ||
+                        (tile02.isX() && tile12.isX() && tile22.isX()) ||
+                        (tile00.isX() && tile01.isX() && tile02.isX()) ||
+                        (tile10.isX() && tile11.isX() && tile12.isX()) ||
+                        (tile20.isX() && tile21.isX() && tile22.isX()) ||
+                        (tile00.isX() && tile11.isX() && tile22.isX()) ||
+                        (tile20.isX() && tile11.isX() && tile02.isX())) {
+                    System.out.println("X player won!");
+                    gameboard.getChildren().clear();
+                    xVictoryCounter++;
+                } else if ((tile00.isO() && tile10.isO() && tile20.isO()) ||
+                        (tile01.isO() && tile11.isO() && tile21.isO()) ||
+                        (tile02.isO() && tile12.isO() && tile22.isO()) ||
+                        (tile00.isO() && tile01.isO() && tile02.isO()) ||
+                        (tile10.isO() && tile11.isO() && tile12.isO()) ||
+                        (tile20.isO() && tile21.isO() && tile22.isO()) ||
+                        (tile00.isO() && tile11.isO() && tile22.isO()) ||
+                        (tile20.isO() && tile11.isO() && tile02.isO())) {
+                    System.out.println("O player won!");
+                    gameboard.getChildren().clear();
+                    oVictoryCounter++;
+                } else if (!tile00.playable && !tile10.playable && !tile20.playable &&
+                        !tile01.playable && !tile11.playable && !tile21.playable &&
+                        !tile02.playable && !tile12.playable && !tile22.playable) {
+                    System.out.println("Draw!");
+                    gameboard.getChildren().clear();
+                }
+            }
+        });
+
+        Button newGame = new Button();
+        newGame.setText("New Game");
+
+
+
         Scene scene = new Scene (gameboard, TILE_SIZE * 3, TILE_SIZE * 4, Color.DARKSLATEGREY);
 
         primaryStage.setTitle("TicTacToe");
@@ -112,6 +189,7 @@ public class MainApp extends Application {
         int xVictoryCounter = 0;
         int oVictoryCounter = 0;
         announceTurn();
+
 
     }
 
