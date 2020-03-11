@@ -1,13 +1,10 @@
 package tictac;
 
 import javafx.application.Application;
-import javafx.application.Platform;
-import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.HPos;
 import javafx.geometry.VPos;
 import javafx.scene.*;
-import javafx.scene.control.Button;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
@@ -18,17 +15,20 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
-import java.util.Objects;
-
 public class MainApp extends Application {
 
     public static int TILE_SIZE = 200;
     public static boolean xTurn;
     public static int xVictoryCounter;
     public static int oVictoryCounter;
+    public static String textToDisplay = "X player's turn";
+
+
+    public static Text notification = new Text("" + textToDisplay);
+
 
     /*
-    public static GridPane newGame() {
+    public GridPane newGame() {
         GridPane root = new GridPane();
         root.setPrefSize(TILE_SIZE * 3, TILE_SIZE * 3);
         root.setGridLinesVisible(true);
@@ -56,13 +56,15 @@ public class MainApp extends Application {
 
      */
 
-    public static void announceTurn(){
-        if (xTurn) {
-            System.out.println("X player's turn ");
-        } else {
-            System.out.println("O player's turn");
-        }
-    }
+
+
+    /*
+    Przeszukiwanie gridpane:
+    użyć streama,
+    (filter) wyfiltrować Node gdzie node == Tile (użyć instanceOf)
+    ale to nadal są elementy typu Node. Trzeba je zrzutować na Tile, więc mapowaniem (map) rzutuję na Tile.
+    Na koniec zebrać to w Listę (collectors tolist).
+     */
 
     // for later usage:
     public static Node getNode (GridPane gridpane, int col, int row) {
@@ -74,6 +76,11 @@ public class MainApp extends Application {
         }
         return null;
     }
+
+    // jak wykorzystać powyższe żeby sprawdzić czy dany Tile jest np. playable (boolean)?
+    // potwierdzić że to TIle (instance of) a potem rzutować na Tile.
+
+   // public static boolean isNodePlayable () {
 
 
 
@@ -141,6 +148,25 @@ public class MainApp extends Application {
         gameboard.add(oScore, 1, 3);
 
 
+        gameboard.add(notification, 1, 3);
+        notification.setFont(Font.font("Agency FB", FontWeight.BOLD, 28));
+        GridPane.setHalignment(notification, HPos.CENTER);
+        GridPane.setValignment(notification, VPos.CENTER);
+        notification.setFill(Color.WHITE);
+
+        /*
+        public static void announceTurn(){
+            if (xTurn) {
+                textToDisplay = "X player's turn";
+
+            } else {
+                textToDisplay = "X player's turn";
+            }
+        }
+
+         */
+
+
         gameboard.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
@@ -152,7 +178,8 @@ public class MainApp extends Application {
                         (tile20.isX() && tile21.isX() && tile22.isX()) ||
                         (tile00.isX() && tile11.isX() && tile22.isX()) ||
                         (tile20.isX() && tile11.isX() && tile02.isX())) {
-                    System.out.println("X player won!");
+                    textToDisplay = "X player won!";
+                    notification.setText(textToDisplay);
                     xVictoryCounter++;
                     xScore.setText("X score: " + xVictoryCounter);
                     tile00.tileReset();
@@ -165,6 +192,11 @@ public class MainApp extends Application {
                     tile12.tileReset();
                     tile22.tileReset();
 
+                    /*
+                    Sprawdzenie wyniku można zrobić streamem i mapą (do mapy dodaję numer wiersza i
+                    ilość wystąpień X w tym wierszu. Jak 3 to wygrana)
+                     */
+
 
                 } else if ((tile00.isO() && tile10.isO() && tile20.isO()) ||
                         (tile01.isO() && tile11.isO() && tile21.isO()) ||
@@ -174,7 +206,8 @@ public class MainApp extends Application {
                         (tile20.isO() && tile21.isO() && tile22.isO()) ||
                         (tile00.isO() && tile11.isO() && tile22.isO()) ||
                         (tile20.isO() && tile11.isO() && tile02.isO())) {
-                    System.out.println("O player won!");
+                    textToDisplay = "O player won!";
+                    notification.setText(textToDisplay);
                     oVictoryCounter++;
                     oScore.setText("O score: " + oVictoryCounter);
                     tile00.tileReset();
@@ -191,7 +224,8 @@ public class MainApp extends Application {
                 } else if (!tile00.playable && !tile10.playable && !tile20.playable &&
                         !tile01.playable && !tile11.playable && !tile21.playable &&
                         !tile02.playable && !tile12.playable && !tile22.playable) {
-                    System.out.println("Draw!");
+                    textToDisplay = "Draw!";
+                    notification.setText(textToDisplay);
                     tile00.tileReset();
                     tile10.tileReset();
                     tile20.tileReset();
@@ -214,7 +248,7 @@ public class MainApp extends Application {
         xTurn = true;
         int xVictoryCounter = 0;
         int oVictoryCounter = 0;
-        announceTurn();
+        //announceTurn();
 
 
         /*

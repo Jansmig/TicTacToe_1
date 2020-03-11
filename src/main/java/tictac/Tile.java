@@ -10,6 +10,8 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
 
+import javax.swing.undo.CannotUndoException;
+
 import static tictac.MainApp.*;
 
 public class Tile extends Rectangle {
@@ -17,7 +19,7 @@ public class Tile extends Rectangle {
     boolean playable = true;
     boolean isX;
     boolean isO;
-    String Identifier;
+    String Identifier; // out
 
     public Tile(int x, int y, int width, int height) {
         super(x, y, width, height);
@@ -59,7 +61,9 @@ public class Tile extends Rectangle {
                         setAsO(false);
                         setIdentifier("X");
                         xTurn = false;
-                        announceTurn();
+                        textToDisplay = "O player's turn";
+                        MainApp.notification.setText(textToDisplay);
+                        //announceTurn();
                     } else {
                         Image oImage = new Image("graphics/O.jpg");
                         ImagePattern oPattern = new ImagePattern(oImage);
@@ -69,7 +73,9 @@ public class Tile extends Rectangle {
                         setAsO(true);
                         setIdentifier("O");
                         xTurn = true;
-                        announceTurn();
+                        textToDisplay = "X player's turn";
+                        MainApp.notification.setText(textToDisplay);
+                        //announceTurn();
                     }
 
 
