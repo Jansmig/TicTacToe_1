@@ -19,7 +19,6 @@ public class Tile extends Rectangle {
     boolean playable = true;
     boolean isX;
     boolean isO;
-    String Identifier; // out
 
     public Tile(int x, int y, int width, int height) {
         super(x, y, width, height);
@@ -28,7 +27,6 @@ public class Tile extends Rectangle {
         setHeight(MainApp.TILE_SIZE);
         setWidth(MainApp.TILE_SIZE);
         setFill(Color.WHITE);
-
 
         setOnMouseEntered(new EventHandler<MouseEvent>() {
             @Override
@@ -59,11 +57,10 @@ public class Tile extends Rectangle {
                         setPlayable(false);
                         setAsX(true);
                         setAsO(false);
-                        setIdentifier("X");
                         xTurn = false;
                         textToDisplay = "O player's turn";
                         MainApp.notification.setText(textToDisplay);
-                        //announceTurn();
+
                     } else {
                         Image oImage = new Image("graphics/O.jpg");
                         ImagePattern oPattern = new ImagePattern(oImage);
@@ -71,19 +68,13 @@ public class Tile extends Rectangle {
                         setPlayable(false);
                         setAsX(false);
                         setAsO(true);
-                        setIdentifier("O");
                         xTurn = true;
                         textToDisplay = "X player's turn";
                         MainApp.notification.setText(textToDisplay);
-                        //announceTurn();
                     }
-
-
                 }
             }
         });
-
-
     }
 
     public void setPlayable(boolean bool) {
@@ -96,10 +87,6 @@ public class Tile extends Rectangle {
 
     public void setAsO(boolean bool) {
         isO = bool;
-    }
-
-    public void setIdentifier(String str) {
-        Identifier = str;
     }
 
     public boolean isPlayable() {
@@ -123,36 +110,12 @@ public class Tile extends Rectangle {
 
     @Override
     public String toString() {
-        return Identifier;
+        return "Is playable: " + playable +
+                " \nIs X: " + isX +
+                " \nIs O: " + isO +
+                " \nX coordinate: " + getX() +
+                " \nY coordinate: " + getY() +
+                System.lineSeparator();
     }
-
-    /*
-    public Node getNode(GridPane grid, int col, int row) {
-        for (Node node : grid.getChildren()) {
-            if (GridPane.getColumnIndex(node) == col && GridPane.getRowIndex(node) == row) {
-                return node;
-            } else {
-                return null;
-            }
-        }
-    }
-
-     */
-
-    /*
-    public static boolean scanForX (GridPane grid, int col, int row) {
-
-        for (Node tile : grid.getChildren()) {
-            if (GridPane.getColumnIndex(tile) == col && GridPane.getRowIndex(tile) == row) {
-                if(tile.isX()) {
-                    return true;
-                }
-
-            }
-        }
-    }
-
-    */
-
 
 }
