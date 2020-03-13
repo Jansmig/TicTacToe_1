@@ -1,16 +1,11 @@
 package tictac;
 
-
 import javafx.event.EventHandler;
-import javafx.scene.Node;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
-
-import javax.swing.undo.CannotUndoException;
 
 import static tictac.MainApp.*;
 
@@ -31,7 +26,7 @@ public class Tile extends Rectangle {
         setOnMouseEntered(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
-                if (playable) {
+                if (playable && gameOn) {
                     setFill(Color.LIGHTGREEN);
                 }
             }
@@ -40,7 +35,7 @@ public class Tile extends Rectangle {
         setOnMouseExited(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
-                if (playable) {
+                if (playable && gameOn) {
                     setFill(Color.WHITE);
                 }
             }
@@ -49,8 +44,8 @@ public class Tile extends Rectangle {
         setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
-                if (playable) {
-                    if (xTurn) {
+                if (playable && gameOn) {
+                    if (xTurn && PvP) {
                         Image xImage = new Image("graphics/X.jpg");
                         ImagePattern xPattern = new ImagePattern(xImage);
                         setFill(xPattern);
@@ -61,7 +56,7 @@ public class Tile extends Rectangle {
                         textToDisplay = "O player's turn";
                         MainApp.notification.setText(textToDisplay);
 
-                    } else {
+                    } else if (!xTurn && PvP) {
                         Image oImage = new Image("graphics/O.jpg");
                         ImagePattern oPattern = new ImagePattern(oImage);
                         setFill(oPattern);
@@ -71,6 +66,15 @@ public class Tile extends Rectangle {
                         xTurn = true;
                         textToDisplay = "X player's turn";
                         MainApp.notification.setText(textToDisplay);
+
+                    } else if (xTurn && !PvP) {
+                        Image xImage = new Image("graphics/X.jpg");
+                        ImagePattern xPattern = new ImagePattern(xImage);
+                        setFill(xPattern);
+                        setPlayable(false);
+                        setAsX(true);
+                        setAsO(false);
+                        computerMove(MainApp.gameboard);
                     }
                 }
             }
@@ -117,5 +121,15 @@ public class Tile extends Rectangle {
                 " \nY coordinate: " + getY() +
                 System.lineSeparator();
     }
+
+    public void computerMovePattern(Tile tile) {
+        tile.setPlayable(false);
+        tile.setAsO(true);
+        tile.setAsX(false);
+        Image oImage = new Image("graphics/O.jpg");
+        ImagePattern oPattern = new ImagePattern(oImage);
+        tile.setFill(oPattern);
+    }
+
 
 }

@@ -1,10 +1,12 @@
 package tictac;
 
 import javafx.application.Application;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.HPos;
 import javafx.geometry.VPos;
 import javafx.scene.*;
+import javafx.scene.control.Button;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
@@ -25,8 +27,11 @@ public class MainApp extends Application {
     public static boolean xTurn;
     public static int xVictoryCounter;
     public static int oVictoryCounter;
-    public static String textToDisplay = "X player's turn";
+    public static String textToDisplay = "Select the game mode";
     public static Text notification = new Text("" + textToDisplay);
+    public static boolean gameOn = false;
+    public static boolean PvP = false;
+    public static GridPane gameboard = new GridPane();
 
 
     public static GridPane newGame() {
@@ -51,12 +56,21 @@ public class MainApp extends Application {
         return root;
     }
 
-
     public static List<Tile> getAllTiles(GridPane gridpane) {
         return
                 gridpane.getChildren().stream()
                         .filter(e -> e instanceof Rectangle)
                         .map(e -> (Tile) e)
+                        .collect(Collectors.toList());
+    }
+
+
+    public static List<Tile> getPlayableTiles(GridPane gridpane) {
+        return
+                gridpane.getChildren().stream()
+                        .filter(e -> e instanceof Rectangle)
+                        .map(e -> (Tile) e)
+                        .filter(Tile::isPlayable)
                         .collect(Collectors.toList());
     }
 
@@ -66,6 +80,26 @@ public class MainApp extends Application {
                         .filter(e -> e.getX() == col)
                         .filter(e -> e.getY() == row)
                         .findFirst().get();
+    }
+
+    public static void computerMove(GridPane gridpane) {
+        List<Tile> tempList = new ArrayList<>();
+        tempList = getPlayableTiles(gridpane);
+        int tempInt = tempList.size();
+        if (tempInt > 0) {
+            int randInt = new Random().nextInt(tempInt);
+            Tile tempTile = tempList.get(randInt);
+            tempTile.computerMovePattern(tempTile);
+        } else {
+            checkXvicotry(gridpane);
+            checkOvicotry(gridpane);
+            checkDraw(gridpane);
+        }
+        textToDisplay = "X player's turn";
+        MainApp.notification.setText(textToDisplay);
+        checkXvicotry(gridpane);
+        checkOvicotry(gridpane);
+        checkDraw(gridpane);
     }
 
     public static boolean checkXvicotry(GridPane gridpane) {
@@ -121,27 +155,25 @@ public class MainApp extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
 
-        GridPane gameboard = newGame();
+        gameboard = newGame();
 
         Text xScore = new Text("X score: " + xVictoryCounter);
         xScore.setFont(Font.font("Agency FB", FontWeight.BOLD, 48));
         GridPane.setHalignment(xScore, HPos.CENTER);
         GridPane.setValignment(xScore, VPos.TOP);
         xScore.setFill(Color.WHITE);
-        gameboard.add(xScore, 1, 3);
 
         Text oScore = new Text("O score: " + oVictoryCounter);
         oScore.setFont(Font.font("Agency FB", FontWeight.BOLD, 48));
         GridPane.setHalignment(oScore, HPos.CENTER);
         GridPane.setValignment(oScore, VPos.BOTTOM);
         oScore.setFill(Color.WHITE);
-        gameboard.add(oScore, 1, 3);
 
-        gameboard.add(notification, 1, 3);
         notification.setFont(Font.font("Agency FB", FontWeight.BOLD, 28));
         GridPane.setHalignment(notification, HPos.CENTER);
         GridPane.setValignment(notification, VPos.CENTER);
         notification.setFill(Color.WHITE);
+        gameboard.add(notification, 1, 3);
 
 
         gameboard.setOnMouseClicked(new EventHandler<MouseEvent>() {
@@ -180,37 +212,63 @@ public class MainApp extends Application {
         int oVictoryCounter = 0;
 
 
-        /*
-        // this button is Useless in the current state
+        Button newGamePvPBtn = new Button();
+        newGamePvPBtn.setText("Player vs Player");
+        GridPane.setHalignment(newGamePvPBtn, HPos.CENTER);
+        newGamePvPBtn.setStyle("    -fx-background-color: \n" +
+                "        linear-gradient(#f2f2f2, #d6d6d6),\n" +
+                "        linear-gradient(#fcfcfc 0%, #d9d9d9 20%, #d6d6d6 100%),\n" +
+                "        linear-gradient(#dddddd 0%, #f6f6f6 50%);\n" +
+                "    -fx-background-radius: 8,7,6;\n" +
+                "    -fx-background-insets: 0,1,2;\n" +
+                "    -fx-text-fill: black;\n" +
+                "    -fx-font-size: 14px;" +
+                "    -fx-font-weight: bold;" +
+                "    -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.6) , 5, 0.0 , 0 , 1 );");
+        gameboard.add(newGamePvPBtn, 0, 3);
 
-        Button newGame = new Button();
-        newGame.setText("New Game");
-        GridPane.setHalignment(newGame, HPos.CENTER);
-        GridPane.setHalignment(newGame, HPos.CENTER);
-        gameboard.add(newGame, 0, 3);
-        newGame.setOnAction(new EventHandler<ActionEvent>() {
+        Button newGamePvEBtn = new Button();
+        newGamePvEBtn.setText("Player vs Computer");
+        GridPane.setHalignment(newGamePvEBtn, HPos.CENTER);
+        newGamePvEBtn.setStyle("    -fx-background-color: \n" +
+                "        linear-gradient(#f2f2f2, #d6d6d6),\n" +
+                "        linear-gradient(#fcfcfc 0%, #d9d9d9 20%, #d6d6d6 100%),\n" +
+                "        linear-gradient(#dddddd 0%, #f6f6f6 50%);\n" +
+                "    -fx-background-radius: 8,7,6;\n" +
+                "    -fx-background-insets: 0,1,2;\n" +
+                "    -fx-text-fill: black;\n" +
+                "    -fx-font-size: 14px;" +
+                "    -fx-font-weight: bold;" +
+                "    -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.6) , 5, 0.0 , 0 , 1 );");
+        gameboard.add(newGamePvEBtn, 2, 3);
+        newGamePvEBtn.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                 if (!tile00.playable && !tile10.playable && !tile20.playable &&
-                        !tile01.playable && !tile11.playable && !tile21.playable &&
-                        !tile02.playable && !tile12.playable && !tile22.playable) {
-                    tile00.tileReset();
-                    tile10.tileReset();
-                    tile20.tileReset();
-                    tile01.tileReset();
-                    tile11.tileReset();
-                    tile21.tileReset();
-                    tile02.tileReset();
-                    tile12.tileReset();
-                    tile22.tileReset();
-
-                } else {
-                    System.out.println("Please finish the current game first.");
-                }
+                gameboard.getChildren().remove(newGamePvEBtn);
+                gameboard.getChildren().remove(newGamePvPBtn);
+                gameboard.add(xScore, 1, 3);
+                gameboard.add(oScore, 1, 3);
+                textToDisplay = "X player's turn";
+                notification.setText(textToDisplay);
+                gameOn = true;
+                PvP = false;
             }
         });
 
-         */
+        newGamePvPBtn.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                gameboard.getChildren().remove(newGamePvPBtn);
+                gameboard.getChildren().remove(newGamePvEBtn);
+                gameboard.add(xScore, 1, 3);
+                gameboard.add(oScore, 1, 3);
+                textToDisplay = "X player's turn";
+                notification.setText(textToDisplay);
+                gameOn = true;
+                PvP = true;
+            }
+        });
+
 
     }
 
